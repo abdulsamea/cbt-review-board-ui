@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { resumeSession } from "../services/api";
 import type { SessionStatus } from "../types/session";
+import { useResumeSession } from "../contexts/ResumeSessionContext";
 
 interface HILInteractionProps {
   sessionStatus: SessionStatus;
@@ -23,6 +24,9 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
   sessionStatus,
   setSessionStatus,
 }) => {
+  // Access global resume session context
+  const { setResumeData } = useResumeSession();
+  
   // Current draft is editable by the user
   const [draftContent, setDraftContent] = useState(
     sessionStatus.current_draft || ""
@@ -63,7 +67,10 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         suggested_content: draftContent, // Send edited content (revision instruction or final draft)
         human_decision: decision,
       });
-        return resumeData
+      
+      // Store resumeData globally so it can be accessed from Dashboard and other components
+      setResumeData(resumeData);
+      
       // Success: Stream will now update the state
     } catch (error) {
       console.error("Resume failed:", error);
@@ -102,7 +109,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
       }}
     >
       <Typography variant="h5" gutterBottom color="error">
-        [Halt] Human-in-the-Loop Required
+        User Suggestion Needed
       </Typography>
       {submitError && (
         <Alert severity="error" sx={{ mb: 2 }}>

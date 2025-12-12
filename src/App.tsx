@@ -1,8 +1,11 @@
 import Dashboard from './components/Dashboard';
+import { ResumeSessionProvider } from './contexts/ResumeSessionContext';
 
 function App() {
   return (
-    <Dashboard /> // Ensure the Dashboard component is rendered
+    <ResumeSessionProvider>
+      <Dashboard />
+    </ResumeSessionProvider>
   );
 }
 

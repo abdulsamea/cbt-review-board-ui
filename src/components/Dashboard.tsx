@@ -11,7 +11,8 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { useSessionStream } from '../hooks/useSessionStream';
 import { startSession } from '../services/api'; 
  // Assuming you define SessionStatus type
-import HILInteraction from './HILInteraction'; 
+import HILInteraction from './HILInteraction';
+import { useResumeSession } from '../contexts/ResumeSessionContext'; 
 
 // --- Interface Definitions (Assuming these are where your types are) ---
 
@@ -28,7 +29,7 @@ interface MetricsDisplayProps {
 // --- Components ---
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, threadAlive }) => {
-    let color: 'error' | 'warning' | 'info' | 'success' | 'primary' = 'info';
+    let color: 'error' | 'warning' | 'info' | 'success' = 'info';
     let label = 'Initializing...';
 
     if (status === "complete") {
@@ -38,7 +39,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, threadAlive }
         color = 'error';
         label = 'HALTED (Awaiting Review)';
     } else if (status === "running") {
-        color = 'primary';
+        color = 'info';
         label = 'RUNNING';
     } else if (status === "revising") {
         color = 'warning';
@@ -91,7 +92,12 @@ const Dashboard: React.FC = () => {
 
     // useSessionStream is the core hook fetching status updates
     const { sessionStatus, setSessionStatus, isLoading, error: streamError } = useSessionStream(threadId);
-    console.log(sessionStatus)
+    
+    // Access global resume session data
+    const { resumeData } = useResumeSession();
+    
+    console.log('Session Status:', sessionStatus);
+    console.log('Resume Data (Global):', resumeData);
 
     const handleStartSession = async () => {
         try {
@@ -166,13 +172,13 @@ const Dashboard: React.FC = () => {
                 }}
             >
                 <Typography variant="h5" gutterBottom color="primary">
-                    Current Working Draft
+                    { resumeData?.status === 'complete' ? 'Final CBT Report' : 'Current Working Draft' }
                 </Typography>
 
                 {/* Display loading/revising indicators */}
                 {(sessionStatus.status === "running" || sessionStatus.status === "revising") && (
                     <Box sx={{ width: "100%", mb: 2 }}>
-                        <LinearProgress />
+                      { resumeData?.status !== 'complete' && <LinearProgress /> }
                     </Box>
                 )}
                 {sessionStatus.status === "revising" && (
@@ -252,7 +258,7 @@ const Dashboard: React.FC = () => {
                     {/* Session Status Panel */}
                     <Paper elevation={3} sx={{ p: 3 }}>
                         <Typography variant="h5" gutterBottom>
-                            2. Session Info {threadId && `(${threadId.substring(0, 8)})`}
+                            2. Session Info
                         </Typography>
                         {sessionStatus ? (
                             <>
@@ -271,7 +277,7 @@ const Dashboard: React.FC = () => {
                                 <MetricsDisplay label="Empathy Score" value={sessionStatus.empathy_metric} />
                                 
                                 {/* Display Graph Error only if it's a true error */}
-                                {sessionStatus.error && (
+                                {sessionStatus.error && sessionStatus.error !== "'HIL_Node'" && (
                                      <Alert severity="error" sx={{ mt: 2 }}>Graph Error: {sessionStatus.error}</Alert>
                                 )}
                             </>
