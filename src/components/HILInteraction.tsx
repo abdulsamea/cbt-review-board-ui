@@ -11,6 +11,7 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
+import ReactMarkdown from "react-markdown";
 import { resumeSession } from "../services/api";
 import type { SessionStatus } from "../types/session";
 import { useResumeSession } from "../contexts/ResumeSessionContext";
@@ -144,26 +145,28 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         </Alert>
       )}
 
-      {/* Original Draft - Non-editable */}
+      {/* Original Draft - Non-editable, rendered as markdown */}
       <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
         Original Draft
       </Typography>
-      <TextField
-        fullWidth
-        multiline
-        rows={8}
-        value={originalDraft}
-        InputProps={{
-          readOnly: true,
-        }}
-        sx={{ 
+      <Box
+        sx={{
+          border: "1px solid #ddd",
+          p: 2,
+          backgroundColor: "#f5f5f5",
+          borderRadius: 1,
           mb: 3,
-          "& .MuiInputBase-input": {
-            backgroundColor: "#f5f5f5",
-            cursor: "default",
-          }
+          minHeight: "200px",
+          maxHeight: "400px",
+          overflowY: "auto",
         }}
-      />
+      >
+        {originalDraft ? (
+          <ReactMarkdown>{originalDraft}</ReactMarkdown>
+        ) : (
+          <Typography color="text.secondary">No draft available</Typography>
+        )}
+      </Box>
 
       {/* User Suggestions - Editable */}
       <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>

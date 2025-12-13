@@ -7,12 +7,12 @@ import {
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import ReactMarkdown from 'react-markdown';
 
 import { useSessionStream } from '../hooks/useSessionStream';
 import { startSession } from '../services/api'; 
  // Assuming you define SessionStatus type
-import HILInteraction from './HILInteraction';
-import { useResumeSession } from '../contexts/ResumeSessionContext'; 
+import HILInteraction from './HILInteraction'; 
 
 // --- Interface Definitions (Assuming these are where your types are) ---
 
@@ -112,7 +112,7 @@ const Dashboard: React.FC = () => {
         if (!sessionStatus) {
             return (
                 <Paper elevation={3} sx={{ p: 3, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Typography variant="h6" color="textSecondary">Session not started. Enter prompt and click 'RESTART PROCESS'.</Typography>
+                    <Typography variant="h6" color="textSecondary">CBT Draft Will be seen here.</Typography>
                 </Paper>
             );
         }
@@ -122,9 +122,9 @@ const Dashboard: React.FC = () => {
             return (
                 <Paper elevation={3} sx={{ p: 3, backgroundColor: '#e8f5e9', height: '100%' }}>
                     <Typography variant="h4" color="success" gutterBottom>✅ Final Approved CBT Plan</Typography>
-                    <Typography component="pre" sx={{ whiteSpace: 'pre-wrap', border: '1px solid #ccc', p: 2, backgroundColor: '#fff', maxHeight: '70vh', overflowY: 'auto' }}>
-                        {sessionStatus.final_cbt_plan}
-                    </Typography>
+                    <Box sx={{ border: '1px solid #ccc', p: 2, backgroundColor: '#fff', maxHeight: '70vh', overflowY: 'auto', borderRadius: 1 }}>
+                        <ReactMarkdown>{sessionStatus.final_cbt_plan}</ReactMarkdown>
+                    </Box>
                     <Alert severity="success" sx={{mt: 2}}>Final artifact saved and session complete.</Alert>
                 </Paper>
             );
@@ -149,9 +149,9 @@ const Dashboard: React.FC = () => {
                  <Paper elevation={3} sx={{ p: 3, height: '100%', backgroundColor: '#e8f5e9' }}>
                     <Typography variant="h4" color="success" gutterBottom>✅ Final Approved CBT Plan (Retrieved)</Typography>
                     <Alert severity="warning" sx={{mb: 2}}>Stream ended unexpectedly, but final artifact was successfully retrieved from the server.</Alert>
-                    <Typography component="pre" sx={{ whiteSpace: 'pre-wrap', border: '1px solid #ccc', p: 2, backgroundColor: '#fff', maxHeight: '70vh', overflowY: 'auto' }}>
-                        {sessionStatus.final_cbt_plan}
-                    </Typography>
+                    <Box sx={{ border: '1px solid #ccc', p: 2, backgroundColor: '#fff', maxHeight: '70vh', overflowY: 'auto', borderRadius: 1 }}>
+                        <ReactMarkdown>{sessionStatus.final_cbt_plan}</ReactMarkdown>
+                    </Box>
                 </Paper>
             );
         }
@@ -191,18 +191,21 @@ const Dashboard: React.FC = () => {
                 )}
                 
                 {/* Draft Content */}
-                <Typography
-                    component="pre"
+                <Box
                     sx={{
-                        whiteSpace: "pre-wrap",
                         border: "1px solid #eee",
                         p: 2,
                         minHeight: "300px",
                         backgroundColor: "#f9f9f9",
+                        borderRadius: 1,
                     }}
                 >
-                    {sessionStatus.current_draft || "Drafting in progress..."}
-                </Typography>
+                    {sessionStatus.current_draft ? (
+                        <ReactMarkdown>{sessionStatus.current_draft}</ReactMarkdown>
+                    ) : (
+                        <Typography color="text.secondary">Drafting in progress...</Typography>
+                    )}
+                </Box>
             </Paper>
         );
     };
