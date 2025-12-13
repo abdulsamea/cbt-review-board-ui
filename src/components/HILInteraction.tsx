@@ -18,11 +18,13 @@ import { useResumeSession } from "../contexts/ResumeSessionContext";
 interface HILInteractionProps {
   sessionStatus: SessionStatus;
   setSessionStatus: React.Dispatch<React.SetStateAction<SessionStatus | null>>;
+  restartStream: () => void;
 }
 
 const HILInteraction: React.FC<HILInteractionProps> = ({
   sessionStatus,
   setSessionStatus,
+  restartStream,
 }) => {
   // Access global resume session context
   const { setResumeData } = useResumeSession();
@@ -62,6 +64,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
     );
 
     try {
+      // 1. Invoke resume API with required data
       const resumeData = await resumeSession({
         thread_id: sessionStatus.thread_id,
         suggested_content: draftContent, // Send edited content (revision instruction or final draft)
@@ -71,7 +74,13 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
       // Store resumeData globally so it can be accessed from Dashboard and other components
       setResumeData(resumeData);
       
-      // Success: Stream will now update the state
+      // 2. Open SSE connection for same thread and start listening
+      if (decision === "Reject") {
+        restartStream();
+        console.log('SSE stream restarted for thread:', sessionStatus.thread_id);
+      }
+      
+      // 3. Stream will now update the state with latest draft data
     } catch (error) {
       console.error("Resume failed:", error);
       setSubmitError(

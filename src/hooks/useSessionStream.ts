@@ -9,6 +9,7 @@ interface UseSessionStreamReturn {
     setSessionStatus: Dispatch<SetStateAction<SessionStatus | null>>;
     isLoading: boolean;
     error: string | null;
+    restartStream: () => void;
 }
 
 const API_BASE_URL = 'http://localhost:8000'; // Replace with your actual backend URL
@@ -17,6 +18,7 @@ export const useSessionStream = (threadId: string | null): UseSessionStreamRetur
     const [sessionStatus, setSessionStatus] = useState<SessionStatus | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [streamKey, setStreamKey] = useState(0); // Key to force stream restart
 
     useEffect(() => {
         if (!threadId) {
@@ -33,6 +35,7 @@ export const useSessionStream = (threadId: string | null): UseSessionStreamRetur
 
         try {
             eventSource = new EventSource(url);
+            console.log(`SSE connection opened for thread: ${threadId} (key: ${streamKey})`);
         } catch (e) {
             console.error("Failed to create EventSource:", e);
             setError("Cannot establish connection to the streaming server.");
@@ -49,6 +52,7 @@ export const useSessionStream = (threadId: string | null): UseSessionStreamRetur
             setIsLoading(false);
             try {
                 const data: SessionStatus = JSON.parse(event.data);
+                console.log('SSE message received:', data);
                 
                 // CRITICAL LOGIC: Update status
                 setSessionStatus(data);
@@ -81,14 +85,22 @@ export const useSessionStream = (threadId: string | null): UseSessionStreamRetur
             setIsLoading(false);
         };
 
-        // Cleanup function: ALWAYS closes the connection when the component unmounts or threadId changes
+        // Cleanup function: ALWAYS closes the connection when the component unmounts or threadId/streamKey changes
         return () => {
             if (eventSource) {
                 eventSource.close();
                 console.log('SSE connection closed by cleanup.');
             }
         };
-    }, [threadId]); // Dependency array: restart stream only if threadId changes
+    }, [threadId, streamKey]); // Dependency array: restart stream when threadId or streamKey changes
 
-    return { sessionStatus, setSessionStatus, isLoading, error };
+    // Function to restart the stream connection
+    const restartStream = () => {
+        if (threadId) {
+            console.log('Restarting SSE stream for thread:', threadId);
+            setStreamKey(prev => prev + 1); // Increment key to trigger useEffect
+        }
+    };
+
+    return { sessionStatus, setSessionStatus, isLoading, error, restartStream };
 };

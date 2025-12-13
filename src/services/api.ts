@@ -35,7 +35,6 @@ export const resumeSession = async (
       data
     );
     const res = response.data;
-    console.log(res)
     return res;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

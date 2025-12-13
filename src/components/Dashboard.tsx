@@ -91,13 +91,10 @@ const Dashboard: React.FC = () => {
     const [modelChoice, setModelChoice] = useState('openai');
 
     // useSessionStream is the core hook fetching status updates
-    const { sessionStatus, setSessionStatus, isLoading, error: streamError } = useSessionStream(threadId);
+    const { sessionStatus, setSessionStatus, isLoading, error: streamError, restartStream } = useSessionStream(threadId);
     
     // Access global resume session data
     const { resumeData } = useResumeSession();
-    
-    console.log('Session Status:', sessionStatus);
-    console.log('Resume Data (Global):', resumeData);
 
     const handleStartSession = async () => {
         try {
@@ -140,7 +137,8 @@ const Dashboard: React.FC = () => {
             return (
                 <HILInteraction 
                     sessionStatus={sessionStatus} 
-                    setSessionStatus={setSessionStatus} 
+                    setSessionStatus={setSessionStatus}
+                    restartStream={restartStream}
                 />
             );
         }
