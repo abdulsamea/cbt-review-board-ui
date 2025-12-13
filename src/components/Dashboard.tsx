@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
     Grid, Paper, Typography, Box, Alert, LinearProgress, 
-    FormControl, Select, MenuItem, InputLabel
+    FormControl
 } from '@mui/material';
 import Note from '@mui/icons-material/Note';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -63,7 +63,7 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({ label, value }) => {
                 variant="determinate" 
                 value={score * 100} 
                 sx={{ height: 8, borderRadius: 5 }} 
-                color={score >= 0.8 ? 'success' : (score >= 0.5 ? 'warning' : 'error')}
+                color={score >= 0.6 ? 'success' : (score >= 0.5 ? 'warning' : 'error')}
             />
         </Box>
     );
@@ -96,7 +96,6 @@ const ActiveNodeDisplay: React.FC<{ label: string | null | undefined, node: stri
 const Dashboard: React.FC = () => {
     const [prompt, setPrompt] = useState("I often feel overwhelmed when I starting going to the gym. Can you generate a simple CBT exercise for managing the stress?");
     const [threadId, setThreadId] = useState<string | null>(null);
-    const [modelChoice, setModelChoice] = useState('openai');
 
     const { sessionStatus, setSessionStatus, isLoading, error: streamError, restartStream } = useSessionStream(threadId);
 
@@ -106,7 +105,7 @@ const Dashboard: React.FC = () => {
             setThreadId(null);
             setSessionStatus(null);
             
-            const newStatus = await startSession({ user_prompt: prompt, model_choice: modelChoice });
+            const newStatus = await startSession({ user_prompt: prompt });
             setThreadId(newStatus.thread_id);
             setSessionStatus(newStatus);
         } catch (err) {
@@ -251,17 +250,6 @@ const Dashboard: React.FC = () => {
                         />
                         </FormControl>
                         <FormControl fullWidth margin="normal">
-                        <InputLabel id="model-select-label">Model Choice</InputLabel>
-                        <Select
-                            labelId="model-select-label"
-                            value={modelChoice}
-                            label="Model Choice"
-                            onChange={(e) => setModelChoice(e.target.value as string)}
-                            fullWidth
-                        >
-                            <MenuItem value={"openai"}>OpenAI (Default)</MenuItem>
-                            <MenuItem value={"anthropic"}>Anthropic</MenuItem>
-                        </Select>
                         </FormControl>
                         <Box sx={{ mt: 2 }}>
                         <button

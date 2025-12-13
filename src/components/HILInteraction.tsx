@@ -209,7 +209,8 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
             Are you sure you want to {actionType === 'Reject' ? 'revise' : 'accept'} the current draft?
             {actionType === "Reject" && (
               <Box component="span">
-                {" "}Your suggestions will be sent as revision instructions to the drafting agent.
+                
+                {userSuggestions && " Your suggestions will be sent as revision instructions to the drafting agent."}
                 {!userSuggestions && (
                   <Typography variant="body2" color="warning.main" sx={{ mt: 1 }}>
                     Note: No suggestions provided. The original draft will be used.

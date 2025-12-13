@@ -12,7 +12,6 @@ export interface SessionStatus {
   final_cbt_plan: string | null;
   safety_metric: number | null;
   empathy_metric: number | null;
-  model_choice: string;
   active_node: string | null;
   active_node_label: string | null;
   thread_alive?: boolean;
@@ -27,5 +26,4 @@ export interface ResumeRequest {
 
 export interface StartRequest {
   user_prompt: string;
-  model_choice: string;
 }
