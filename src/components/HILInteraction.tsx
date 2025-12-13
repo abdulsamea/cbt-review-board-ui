@@ -27,7 +27,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
   setSessionStatus,
   restartStream,
 }) => {
-  // Access global resume session context
+
   const { setResumeData } = useResumeSession();
   
   // Original draft (non-editable, from sessionStatus)
@@ -145,7 +145,6 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         </Alert>
       )}
 
-      {/* Original Draft - Non-editable, rendered as markdown */}
       <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
         Original Draft
       </Typography>
@@ -168,7 +167,6 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         )}
       </Box>
 
-      {/* User Suggestions - Editable */}
       <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
         Your Suggestions / Revision Instructions
       </Typography>
@@ -202,7 +200,6 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         </Button>
       </Box>
 
-      {/* Confirmation Dialog (Point 6) */}
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
         <DialogTitle>
           {actionType === "Approve" ? "Confirm Approval" : "Confirm Revision"}

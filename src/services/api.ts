@@ -7,7 +7,6 @@ import type {
 
 const API_BASE_URL = "http://localhost:8000";
 
-// API to start a new session
 export const startSession = async (
   data: StartRequest
 ): Promise<SessionStatus> => {
@@ -25,7 +24,6 @@ export const startSession = async (
   }
 };
 
-// API to resume a halted session (Approve or Reject/Revise)
 export const resumeSession = async (
   data: ResumeRequest
 ): Promise<SessionStatus> => {

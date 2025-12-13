@@ -1,8 +1,5 @@
-// src/hooks/useSessionStream.ts
-
 import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
-import type { SessionStatus } from '../types/session'; // Assuming you define SessionStatus type
- // Assuming you define SessionStatus type
+import type { SessionStatus } from '../types/session';
 
 interface UseSessionStreamReturn {
     sessionStatus: SessionStatus | null;
@@ -12,13 +9,13 @@ interface UseSessionStreamReturn {
     restartStream: () => void;
 }
 
-const API_BASE_URL = 'http://localhost:8000'; // Replace with your actual backend URL
+const API_BASE_URL = 'http://localhost:8000';
 
 export const useSessionStream = (threadId: string | null): UseSessionStreamReturn => {
     const [sessionStatus, setSessionStatus] = useState<SessionStatus | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [streamKey, setStreamKey] = useState(0); // Key to force stream restart
+    const [streamKey, setStreamKey] = useState(0);
 
     useEffect(() => {
         if (!threadId) {
@@ -54,10 +51,10 @@ export const useSessionStream = (threadId: string | null): UseSessionStreamRetur
                 const data: SessionStatus = JSON.parse(event.data);
                 console.log('SSE message received:', data);
                 
-                // CRITICAL LOGIC: Update status
+                // Update status
                 setSessionStatus(data);
                 
-                // CRITICAL FIX: If the backend sends a terminal status AND thread is dead, close gracefully.
+                // If the backend sends a terminal status AND thread is dead, close gracefully.
                 // The backend now determines the end state reliably.
                 if (data.status === 'complete' && !data.thread_alive) {
                     eventSource?.close();

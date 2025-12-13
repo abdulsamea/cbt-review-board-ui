@@ -1,5 +1,3 @@
-// src/components/Dashboard.tsx
-
 import React, { useState } from 'react';
 import { 
     Grid, Paper, Typography, Box, Alert, LinearProgress, 
@@ -11,10 +9,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { useSessionStream } from '../hooks/useSessionStream';
 import { startSession } from '../services/api'; 
- // Assuming you define SessionStatus type
 import HILInteraction from './HILInteraction'; 
-
-// --- Interface Definitions (Assuming these are where your types are) ---
 
 interface StatusIndicatorProps {
     status: string;
@@ -27,7 +22,6 @@ interface MetricsDisplayProps {
     value: number | null | undefined;
 }
 
-// --- Components ---
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, threadAlive, node }) => {
     let color: 'error' | 'warning' | 'info' | 'success' = 'info';
@@ -98,20 +92,18 @@ const ActiveNodeDisplay: React.FC<{ label: string | null | undefined, node: stri
     );
 };
 
-// --- Main Dashboard ---
 
 const Dashboard: React.FC = () => {
-    const [prompt, setPrompt] = useState("I often feel depressed when I fail coding interviews. Can you generate a simple CBT exercise for managing the stress?");
+    const [prompt, setPrompt] = useState("I often feel overwhelmed when I starting going to the gym. Can you generate a simple CBT exercise for managing the stress?");
     const [threadId, setThreadId] = useState<string | null>(null);
     const [modelChoice, setModelChoice] = useState('openai');
 
-    // useSessionStream is the core hook fetching status updates
     const { sessionStatus, setSessionStatus, isLoading, error: streamError, restartStream } = useSessionStream(threadId);
 
 
     const handleStartSession = async () => {
         try {
-            setThreadId(null); // Reset thread ID to restart stream
+            setThreadId(null);
             setSessionStatus(null);
             
             const newStatus = await startSession({ user_prompt: prompt, model_choice: modelChoice });
@@ -132,11 +124,11 @@ const Dashboard: React.FC = () => {
             );
         }
 
-        // Check 1: Display the final completed state (Standard success path)
+        // Check 1: Display the final completed state
         if (sessionStatus.status === 'complete' && sessionStatus.final_cbt_plan) {
             return (
                 <Paper elevation={3} sx={{ p: 3, backgroundColor: '#e8f5e9', height: '100%' }}>
-                    <Typography variant="h4" color="success" gutterBottom>✅ Final Approved CBT Plan</Typography>
+                    <Typography variant="h4" color="success" gutterBottom>Final Approved CBT Plan</Typography>
                     <Box sx={{ border: '1px solid #ccc', p: 2, backgroundColor: '#fff', maxHeight: '70vh', overflowY: 'auto', borderRadius: 1 }}>
                         <ReactMarkdown>{sessionStatus.final_cbt_plan}</ReactMarkdown>
                     </Box>
@@ -156,13 +148,12 @@ const Dashboard: React.FC = () => {
             );
         }
 
-        // --- CRITICAL DEFENSIVE CHECK (For missed 'complete' status) ---
         // If the thread is confirmed dead (!thread_alive) OR the stream failed (error), 
         // AND we have final plan data, force the final view display.
         if ((!sessionStatus.thread_alive) && sessionStatus.final_cbt_plan) {
             return (
                  <Paper elevation={3} sx={{ p: 3, height: '100%', backgroundColor: '#e8f5e9' }}>
-                    <Typography variant="h4" color="success" gutterBottom>✅ Final Approved CBT Plan (Retrieved)</Typography>
+                    <Typography variant="h4" color="success" gutterBottom>Final Approved CBT Plan (Retrieved)</Typography>
                     <Alert severity="warning" sx={{mb: 2}}>Stream ended unexpectedly, but final artifact was successfully retrieved from the server.</Alert>
                     <Box sx={{ border: '1px solid #ccc', p: 2, backgroundColor: '#fff', maxHeight: '70vh', overflowY: 'auto', borderRadius: 1 }}>
                         <ReactMarkdown>{sessionStatus.final_cbt_plan}</ReactMarkdown>
@@ -177,7 +168,6 @@ const Dashboard: React.FC = () => {
                 elevation={3}
                 sx={{
                     padding: '15px',
-                    // height: "100%",
                     overflowY: "auto",
                     backgroundColor: "#fff",
                 }}
@@ -228,7 +218,7 @@ const Dashboard: React.FC = () => {
                         </ReactMarkdown>
                       </Box>
                     ) : (
-                        <Typography color="text.secondary">Drafting in progress...</Typography>
+                        <Typography color="text.secondary" textAlign={'center'}>Drafting in progress...</Typography>
                     )}
                 </Box>
             </Paper>
@@ -243,15 +233,14 @@ const Dashboard: React.FC = () => {
                 sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
                 <DashboardIcon sx={{ mr: 1 }} />
-                CBT Review Board Dashboard
+                CBT Review Board
             </Typography>
 
             <Grid container direction="column" sx={{ width: '100vw', minWidth: '100%', px: '10px', py: '10px', overflowX: 'hidden',  alignItems: 'center', justifyContent: 'center'  }} spacing={4}>
-                {/* Top row: Start New Session + Session Info side by side */}
                 <Grid container direction="row" spacing={3} sx={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
                     <Grid sx={{ height: '400px', minWidth: '40%', flexGrow: 0, flexShrink: 0 }}>
                     <Paper elevation={3} sx={{ p: 3, height: '100%', boxSizing: 'border-box' }}>
-                        <Typography variant="h5" gutterBottom>1. Start New Session</Typography>
+                        <Typography variant="h5" gutterBottom textAlign={'center'}>Start New Session</Typography>
                         <FormControl fullWidth margin="normal">
                         <Typography variant="body2" sx={{ mb: 0.5 }}>User's CBT Requirement/Prompt*</Typography>
                         <textarea
@@ -277,7 +266,7 @@ const Dashboard: React.FC = () => {
                         <Box sx={{ mt: 2 }}>
                         <button
                             onClick={handleStartSession}
-                            style={{ padding: '10px 20px', backgroundColor: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            style={{ justifyContent: 'center',  width: '100%', padding: '10px 20px', backgroundColor: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                             disabled={isLoading}
                         >
                             <PlayArrowIcon sx={{ mr: 1 }} />
@@ -289,7 +278,7 @@ const Dashboard: React.FC = () => {
 
                     <Grid sx={{ height: '400px', minWidth: '40%', flexGrow: 0, flexShrink: 0 }}>
                     <Paper elevation={3} sx={{ p: 3, height: '100%', boxSizing: 'border-box' }}>
-                        <Typography variant="h5" gutterBottom>2. Session Info</Typography>
+                        <Typography variant="h5" gutterBottom textAlign={'center'}>Session Info</Typography>
                         {sessionStatus ? (
                         <>
                             <StatusIndicator node={sessionStatus.active_node} status={sessionStatus.status} threadAlive={sessionStatus.thread_alive ?? false} />
@@ -307,7 +296,7 @@ const Dashboard: React.FC = () => {
                             )}
                         </>
                         ) : (
-                        <Typography color="textSecondary">Awaiting session start...</Typography>
+                        <Typography color="textSecondary" textAlign={'center'}>Awaiting session start...</Typography>
                         )}
                         {streamError && (
                         <Alert severity="error" sx={{ mt: 2 }}>Stream Error: {streamError}</Alert>
