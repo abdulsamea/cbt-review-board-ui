@@ -227,7 +227,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
             color={actionType === "Approve" ? "primary" : "error"}
             variant="contained"
           >
-            Yes, {actionType === 'Reject' ? 'revise' : 'accept'}
+            Yes, {actionType === 'Reject' ? 'revise this draft' : 'I accept this draft'}
           </Button>
         </DialogActions>
       </Dialog>
