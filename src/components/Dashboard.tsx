@@ -233,7 +233,7 @@ const Dashboard: React.FC = () => {
                 sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
                 <DashboardIcon sx={{ mr: 1 }} />
-                CBT Review Board
+                CBT Exercise Planner
             </Typography>
 
             <Grid container direction="column" sx={{ width: '100vw', minWidth: '100%', px: '10px', py: '10px', overflowX: 'hidden',  alignItems: 'center', justifyContent: 'center'  }} spacing={4}>
