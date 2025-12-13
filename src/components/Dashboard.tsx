@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
     const renderMainContent = () => {
         if (!sessionStatus) {
             return (
-                <Paper elevation={3} sx={{ padding: '10px', minWidth: '100%',  height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Paper elevation={3} sx={{ padding: '10px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Typography variant="h6" color="textSecondary">CBT Draft Will be seen here.</Typography>
                 </Paper>
             );
@@ -162,7 +162,7 @@ const Dashboard: React.FC = () => {
                 elevation={3}
                 sx={{
                     padding: '15px',
-                    height: "100%",
+                    // height: "100%",
                     overflowY: "auto",
                     backgroundColor: "#fff",
                 }}
@@ -201,7 +201,17 @@ const Dashboard: React.FC = () => {
                     }}
                 >
                     {sessionStatus.current_draft ? (
-                        <ReactMarkdown>{sessionStatus.current_draft}</ReactMarkdown>
+                        <Box
+                        sx={{
+                          p: 2,
+                          backgroundColor: '#fff',
+                          borderRadius: 1,
+                        }}
+                      >
+                        <ReactMarkdown>
+                          {sessionStatus.current_draft}
+                        </ReactMarkdown>
+                      </Box>
                     ) : (
                         <Typography color="text.secondary">Drafting in progress...</Typography>
                     )}
@@ -291,7 +301,7 @@ const Dashboard: React.FC = () => {
                     </Grid>
                 </Grid>
 
-                <Grid container direction="row" spacing={3} sx={{ maxWidth: '80%' }}>
+                <Grid container direction="row" spacing={3} sx={{ width: '80%' }}>
                     <Box sx={{ width: '100%' }}>
                     {renderMainContent()}
                     </Box>

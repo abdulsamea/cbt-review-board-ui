@@ -198,7 +198,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
           onClick={() => handleActionClick("Reject")}
           sx={{ flexGrow: 1 }}
         >
-          Reject & Revise
+          Revise
         </Button>
       </Box>
 
@@ -209,7 +209,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         </DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to **{actionType}** the current draft?
+            Are you sure you want to {actionType === 'Reject' ? 'revise' : 'accept'} the current draft?
             {actionType === "Reject" && (
               <Box component="span">
                 {" "}Your suggestions will be sent as revision instructions to the drafting agent.
@@ -229,7 +229,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
             color={actionType === "Approve" ? "primary" : "error"}
             variant="contained"
           >
-            Yes, {actionType}
+            Yes, {actionType === 'Reject' ? 'revise' : 'accept'}
           </Button>
         </DialogActions>
       </Dialog>
