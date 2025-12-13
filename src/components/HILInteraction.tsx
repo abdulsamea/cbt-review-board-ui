@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -29,16 +29,29 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
   // Access global resume session context
   const { setResumeData } = useResumeSession();
   
-  // Current draft is editable by the user
-  const [draftContent, setDraftContent] = useState(
+  // Original draft (non-editable, from sessionStatus)
+  const [originalDraft, setOriginalDraft] = useState(
     sessionStatus.current_draft || ""
   );
+  
+  // User suggestions (editable, for revision instructions)
+  const [userSuggestions, setUserSuggestions] = useState("");
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [actionType, setActionType] = useState<"Approve" | "Reject" | null>(
     null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Update original draft when sessionStatus changes (e.g., new draft from stream)
+  useEffect(() => {
+    if (sessionStatus.current_draft) {
+      setOriginalDraft(sessionStatus.current_draft);
+      // Clear user suggestions when new draft arrives
+      setUserSuggestions("");
+    }
+  }, [sessionStatus.current_draft]);
 
   const handleActionClick = (type: "Approve" | "Reject") => {
     setActionType(type);
@@ -65,9 +78,14 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
 
     try {
       // 1. Invoke resume API with required data
+      // For "Approve", use original draft; for "Reject", use user suggestions from second text area
+      const suggestedContent = decision === "Approve" 
+        ? originalDraft 
+        : userSuggestions; // Use user suggestions (can be empty string)
+      
       const resumeData = await resumeSession({
         thread_id: sessionStatus.thread_id,
-        suggested_content: draftContent, // Send edited content (revision instruction or final draft)
+        suggested_content: suggestedContent,
         human_decision: decision,
       });
       
@@ -126,13 +144,39 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         </Alert>
       )}
 
+      {/* Original Draft - Non-editable */}
+      <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
+        Original Draft
+      </Typography>
       <TextField
         fullWidth
         multiline
-        rows={10}
-        label="Draft for Review (Edit to provide revision instructions)"
-        value={draftContent}
-        onChange={(e) => setDraftContent(e.target.value)}
+        rows={8}
+        value={originalDraft}
+        InputProps={{
+          readOnly: true,
+        }}
+        sx={{ 
+          mb: 3,
+          "& .MuiInputBase-input": {
+            backgroundColor: "#f5f5f5",
+            cursor: "default",
+          }
+        }}
+      />
+
+      {/* User Suggestions - Editable */}
+      <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
+        Your Suggestions / Revision Instructions
+      </Typography>
+      <TextField
+        fullWidth
+        multiline
+        rows={6}
+        label="Enter your revision suggestions or instructions here"
+        value={userSuggestions}
+        onChange={(e) => setUserSuggestions(e.target.value)}
+        placeholder="Provide your feedback, revision instructions, or suggestions for improving the draft..."
         sx={{ mb: 2 }}
       />
 
@@ -163,8 +207,16 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         <DialogContent>
           <Typography>
             Are you sure you want to **{actionType}** the current draft?
-            {actionType === "Reject" &&
-              " The content above will be sent as revision instructions to the drafting agent."}
+            {actionType === "Reject" && (
+              <Box component="span">
+                {" "}Your suggestions will be sent as revision instructions to the drafting agent.
+                {!userSuggestions && (
+                  <Typography variant="body2" color="warning.main" sx={{ mt: 1 }}>
+                    Note: No suggestions provided. The original draft will be used.
+                  </Typography>
+                )}
+              </Box>
+            )}
           </Typography>
         </DialogContent>
         <DialogActions>

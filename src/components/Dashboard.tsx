@@ -92,9 +92,7 @@ const Dashboard: React.FC = () => {
 
     // useSessionStream is the core hook fetching status updates
     const { sessionStatus, setSessionStatus, isLoading, error: streamError, restartStream } = useSessionStream(threadId);
-    
-    // Access global resume session data
-    const { resumeData } = useResumeSession();
+
 
     const handleStartSession = async () => {
         try {
@@ -170,13 +168,13 @@ const Dashboard: React.FC = () => {
                 }}
             >
                 <Typography variant="h5" gutterBottom color="primary">
-                    { resumeData?.status === 'complete' ? 'Final CBT Report' : 'Current Working Draft' }
+                    { sessionStatus?.active_node === 'Finalize' ? 'Final CBT Report' : 'Current Working Draft' }
                 </Typography>
 
                 {/* Display loading/revising indicators */}
-                {(sessionStatus.status === "running" || sessionStatus.status === "revising") && (
+                {(sessionStatus?.active_node !== 'Finalize') && (sessionStatus.status === "running" || sessionStatus.status === "revising") && (
                     <Box sx={{ width: "100%", mb: 2 }}>
-                      { resumeData?.status !== 'complete' && <LinearProgress /> }
+                      { <LinearProgress /> }
                     </Box>
                 )}
                 {sessionStatus.status === "revising" && (
