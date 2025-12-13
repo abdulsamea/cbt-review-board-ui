@@ -19,6 +19,7 @@ import HILInteraction from './HILInteraction';
 interface StatusIndicatorProps {
     status: string;
     threadAlive: boolean;
+    node: string | null;
 }
 
 interface MetricsDisplayProps {
@@ -28,9 +29,9 @@ interface MetricsDisplayProps {
 
 // --- Components ---
 
-const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, threadAlive }) => {
+const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, threadAlive, node }) => {
     let color: 'error' | 'warning' | 'info' | 'success' = 'info';
-    let label = 'Initializing...';
+    let label = 'Initializing...';    
 
     if (status === "complete") {
         color = 'success';
@@ -51,8 +52,8 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, threadAlive }
     }
 
     return (
-        <Alert severity={color} sx={{ mb: 1, fontWeight: 'bold' }}>
-            Status: {label}
+        <Alert severity={node === 'Finalized' ? 'success' : color} sx={{ mb: 1, fontWeight: 'bold' }}>
+            Status: { node !== 'Finalize' ? label : 'Finalized'}
         </Alert>
     );
 };
@@ -74,11 +75,25 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({ label, value }) => {
     );
 };
 
-const ActiveNodeDisplay: React.FC<{ label: string | null | undefined }> = ({ label }) => {
+const ActiveNodeDisplay: React.FC<{ label: string | null | undefined, node: string | null | undefined }> = ({ label, node }) => {
     if (!label) return null;
     return (
         <Alert severity="info" sx={{ mb: 1 }}>
-            Active Agent: <strong>{label}</strong>
+            Active Agent:{' '}
+            <Box
+            component="span"
+            sx={ node !== 'Finalize' ? {
+                fontWeight: 'bold',
+                animation: 'blink 1.2s infinite',
+                '@keyframes blink': {
+                '0%': { opacity: 1 },
+                '50%': { opacity: 0 },
+                '100%': { opacity: 1 },
+                },
+            }: {}}
+            >
+                {node !== 'Finalize' ? label : 'None'}
+            </Box>
         </Alert>
     );
 };
@@ -277,9 +292,9 @@ const Dashboard: React.FC = () => {
                         <Typography variant="h5" gutterBottom>2. Session Info</Typography>
                         {sessionStatus ? (
                         <>
-                            <StatusIndicator status={sessionStatus.status} threadAlive={sessionStatus.thread_alive ?? false} />
+                            <StatusIndicator node={sessionStatus.active_node} status={sessionStatus.status} threadAlive={sessionStatus.thread_alive ?? false} />
                             {sessionStatus.status !== 'halted' || sessionStatus.active_node !== 'HIL_Node' ? (
-                            <ActiveNodeDisplay label={sessionStatus.active_node_label} />
+                            <ActiveNodeDisplay label={sessionStatus.active_node_label} node={sessionStatus.active_node} />
                             ) : (
                             <Alert severity="info" sx={{ mb: 1 }}>
                                 Awaiting Action: <strong>{sessionStatus.active_node_label}</strong>
