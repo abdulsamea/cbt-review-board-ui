@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
     const renderMainContent = () => {
         if (!sessionStatus) {
             return (
-                <Paper elevation={3} sx={{ p: 3, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Paper elevation={3} sx={{ padding: '10px', minWidth: '100%',  height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Typography variant="h6" color="textSecondary">CBT Draft Will be seen here.</Typography>
                 </Paper>
             );
@@ -161,7 +161,7 @@ const Dashboard: React.FC = () => {
             <Paper
                 elevation={3}
                 sx={{
-                    p: 3,
+                    padding: '15px',
                     height: "100%",
                     overflowY: "auto",
                     backgroundColor: "#fff",
@@ -194,7 +194,7 @@ const Dashboard: React.FC = () => {
                 <Box
                     sx={{
                         border: "1px solid #eee",
-                        p: 2,
+                        // padding: '10px',
                         minHeight: "300px",
                         backgroundColor: "#f9f9f9",
                         borderRadius: 1,
@@ -211,89 +211,93 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <Box sx={{ p: 4 }}>
-            <Typography variant="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                <DashboardIcon sx={{ mr: 1 }} /> CBT Review Board Dashboard
+        <Box sx={{ px: 2, py: 3, alignItems: 'center', justifyContent: 'center' }}>
+            <Typography
+                variant="h3"
+                gutterBottom
+                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+                <DashboardIcon sx={{ mr: 1 }} />
+                CBT Review Board Dashboard
             </Typography>
-            <Grid container spacing={3}>
-                
-                {/* Left Column: Input and Session Info */}
-                <Grid container spacing={2}>
-                    <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+
+            <Grid container direction="column" sx={{ width: '100vw', minWidth: '100%', px: '10px', py: '10px', overflowX: 'hidden',  alignItems: 'center', justifyContent: 'center'  }} spacing={4}>
+                {/* Top row: Start New Session + Session Info side by side */}
+                <Grid container direction="row" spacing={3} sx={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                    <Grid sx={{ height: '400px', minWidth: '40%', flexGrow: 0, flexShrink: 0 }}>
+                    <Paper elevation={3} sx={{ p: 3, height: '100%', boxSizing: 'border-box' }}>
                         <Typography variant="h5" gutterBottom>1. Start New Session</Typography>
                         <FormControl fullWidth margin="normal">
-                            <Typography variant="body2" sx={{ mb: 0.5 }}>User's CBT Requirement/Prompt*</Typography>
-                            <textarea
-                                value={prompt}
-                                onChange={(e) => setPrompt(e.target.value)}
-                                rows={4}
-                                style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
-                            />
+                        <Typography variant="body2" sx={{ mb: 0.5 }}>User's CBT Requirement/Prompt*</Typography>
+                        <textarea
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            rows={4}
+                            style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', width: '100%' }}
+                        />
                         </FormControl>
                         <FormControl fullWidth margin="normal">
-                            <InputLabel id="model-select-label">Model Choice</InputLabel>
-                            <Select
-                                labelId="model-select-label"
-                                value={modelChoice}
-                                label="Model Choice"
-                                onChange={(e) => setModelChoice(e.target.value as string)}
-                            >
-                                <MenuItem value={"openai"}>OpenAI (Default)</MenuItem>
-                                <MenuItem value={"anthropic"}>Anthropic</MenuItem>
-                            </Select>
+                        <InputLabel id="model-select-label">Model Choice</InputLabel>
+                        <Select
+                            labelId="model-select-label"
+                            value={modelChoice}
+                            label="Model Choice"
+                            onChange={(e) => setModelChoice(e.target.value as string)}
+                            fullWidth
+                        >
+                            <MenuItem value={"openai"}>OpenAI (Default)</MenuItem>
+                            <MenuItem value={"anthropic"}>Anthropic</MenuItem>
+                        </Select>
                         </FormControl>
                         <Box sx={{ mt: 2 }}>
-                            <button 
-                                onClick={handleStartSession} 
-                                style={{ padding: '10px 20px', backgroundColor: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                                disabled={isLoading}
-                            >
-                                <PlayArrowIcon sx={{ mr: 1 }} />
-                                {threadId ? 'RESTART PROCESS' : 'START PROCESS'}
-                            </button>
+                        <button
+                            onClick={handleStartSession}
+                            style={{ padding: '10px 20px', backgroundColor: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            disabled={isLoading}
+                        >
+                            <PlayArrowIcon sx={{ mr: 1 }} />
+                            {threadId ? 'RESTART PROCESS' : 'START PROCESS'}
+                        </button>
                         </Box>
                     </Paper>
+                    </Grid>
 
-                    {/* Session Status Panel */}
-                    <Paper elevation={3} sx={{ p: 3 }}>
-                        <Typography variant="h5" gutterBottom>
-                            2. Session Info
-                        </Typography>
+                    <Grid sx={{ height: '400px', minWidth: '40%', flexGrow: 0, flexShrink: 0 }}>
+                    <Paper elevation={3} sx={{ p: 3, height: '100%', boxSizing: 'border-box' }}>
+                        <Typography variant="h5" gutterBottom>2. Session Info</Typography>
                         {sessionStatus ? (
-                            <>
-                                <StatusIndicator status={sessionStatus.status} threadAlive={sessionStatus.thread_alive ?? false} />
-                                
-                                {/* Hide ActiveNodeDisplay if halting for HIL_Node */}
-                                {sessionStatus.status !== 'halted' || sessionStatus.active_node !== 'HIL_Node' ? (
-                                    <ActiveNodeDisplay label={sessionStatus.active_node_label} />
-                                ) : (
-                                    <Alert severity="info" sx={{ mb: 1 }}>
-                                        Awaiting Action: <strong>{sessionStatus.active_node_label}</strong>
-                                    </Alert>
-                                )}
-                                
-                                <MetricsDisplay label="Safety Score" value={sessionStatus.safety_metric} />
-                                <MetricsDisplay label="Empathy Score" value={sessionStatus.empathy_metric} />
-                                
-                                {/* Display Graph Error only if it's a true error */}
-                                {sessionStatus.error && sessionStatus.error !== "'HIL_Node'" && (
-                                     <Alert severity="error" sx={{ mt: 2 }}>Graph Error: {sessionStatus.error}</Alert>
-                                )}
-                            </>
+                        <>
+                            <StatusIndicator status={sessionStatus.status} threadAlive={sessionStatus.thread_alive ?? false} />
+                            {sessionStatus.status !== 'halted' || sessionStatus.active_node !== 'HIL_Node' ? (
+                            <ActiveNodeDisplay label={sessionStatus.active_node_label} />
+                            ) : (
+                            <Alert severity="info" sx={{ mb: 1 }}>
+                                Awaiting Action: <strong>{sessionStatus.active_node_label}</strong>
+                            </Alert>
+                            )}
+                            <MetricsDisplay label="Safety Score" value={sessionStatus.safety_metric} />
+                            <MetricsDisplay label="Empathy Score" value={sessionStatus.empathy_metric} />
+                            {sessionStatus.error && sessionStatus.error !== "'HIL_Node'" && (
+                            <Alert severity="error" sx={{ mt: 2 }}>Graph Error: {sessionStatus.error}</Alert>
+                            )}
+                        </>
                         ) : (
-                            <Typography color="textSecondary">Awaiting session start...</Typography>
+                        <Typography color="textSecondary">Awaiting session start...</Typography>
                         )}
                         {streamError && (
-                            <Alert severity="error" sx={{ mt: 2 }}>Stream Error: {streamError}</Alert>
+                        <Alert severity="error" sx={{ mt: 2 }}>Stream Error: {streamError}</Alert>
                         )}
                     </Paper>
+                    </Grid>
                 </Grid>
-                
-                {/* Right Column: Draft/Final Content */}
-                <Grid container spacing={2}>
+
+                <Grid container direction="row" spacing={3} sx={{ maxWidth: '80%' }}>
+                    <Box sx={{ width: '100%' }}>
                     {renderMainContent()}
+                    </Box>
                 </Grid>
             </Grid>
+
         </Box>
     );
 };
