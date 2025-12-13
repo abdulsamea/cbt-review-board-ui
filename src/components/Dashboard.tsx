@@ -3,7 +3,7 @@ import {
     Grid, Paper, Typography, Box, Alert, LinearProgress, 
     FormControl, Select, MenuItem, InputLabel
 } from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import Note from '@mui/icons-material/Note';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ReactMarkdown from 'react-markdown';
 
@@ -232,7 +232,7 @@ const Dashboard: React.FC = () => {
                 gutterBottom
                 sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-                <DashboardIcon sx={{ mr: 1 }} />
+                <Note sx={{ mr: 4 }} />
                 CBT Exercise Planner
             </Typography>
 
