@@ -12,10 +12,6 @@ Make sure you have the following installed:
 
 * **Node.js** (v18+ recommended)
 * **npm** (comes with Node)
-* **Python** (3.9+ recommended)
-* **pip**
-* **virtualenv / venv**
-
 ---
 
 ## Environment Configuration
@@ -66,7 +62,6 @@ Example endpoints used:
 * `POST /start_session`
 * `POST /resume_session`
 * `GET /stream_session_info`
-* `GET /threads/{thread_id}/checkpoints`
 
 Ensure the backend is running **before** starting the frontend.
 
@@ -81,7 +76,6 @@ Available npm scripts:
 | `npm run dev`     | Start development server |
 | `npm run build`   | Build production bundle  |
 | `npm run preview` | Preview production build |
-| `npm run lint`    | Run ESLint               |
 
 ---
 
