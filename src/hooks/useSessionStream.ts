@@ -49,7 +49,6 @@ export const useSessionStream = (threadId: string | null): UseSessionStreamRetur
             setIsLoading(false);
             try {
                 const data: SessionStatus = JSON.parse(event.data);
-                console.log('SSE message received:', data);
                 
                 // Update status
                 setSessionStatus(data);

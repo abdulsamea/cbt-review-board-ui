@@ -213,7 +213,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
                 {userSuggestions && " Your suggestions will be sent as revision instructions to the drafting agent."}
                 {!userSuggestions && (
                   <Typography variant="body2" color="warning.main" sx={{ mt: 1 }}>
-                    Note: No suggestions provided. The original draft will be used.
+                    Note: No suggestions provided. Please provide revision instructions to the drafting agent.
                   </Typography>
                 )}
               </Box>
@@ -223,6 +223,7 @@ const HILInteraction: React.FC<HILInteractionProps> = ({
         <DialogActions>
           <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
           <Button
+            disabled={!userSuggestions && actionType === 'Reject'}
             onClick={handleConfirm}
             color={actionType === "Approve" ? "primary" : "error"}
             variant="contained"
